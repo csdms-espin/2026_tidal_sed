@@ -75,7 +75,7 @@ class BedLevelEvolution(Component):
     def __init__(
         self,
         grid,
-        diffusivity = 3.75, #
+        diffusivity = 3.75,
         relative_sea_level_rise = 0,
         settling_velocity = 0.03,
         sediment_concentration = 0.1,
@@ -86,22 +86,40 @@ class BedLevelEvolution(Component):
         rho_sediment = 2650,
         g = 9.81,
     ):
-        """Initialize BedEvolution
+        """Initialize the BedLevelEvolution model.
         
         Parameters
         ----------
         grid : ModelGrid
-        A Landlab grid.
-        diffusivity : 
-        relative_sea_level_rise : 
-        settling_velocity : 
-        sediment_concentration :
-        critical_shear_stress : 
-        erodibility_coefficient : 
-        mannings_n : 
-        rho_water : 
-        rho_sediment : 
-        g : 
+            Landlab ModelGrid object
+
+    v: velocity vectors (on links) - output from TidalFlowCalculator component
+
+  
+
+    
+            
+        diffusivity : float, optional
+            Diffusion coefficient. Defaults to 3.65 (Kirwan and Murray, 2007) -> now 3.75?
+        relative_sea_level_rise : float, optional
+            Relative sea level rise. Defaults to 0, no sea level change.
+        settling_velocity : float, optional
+            Settling velocity of sediment. Defaults to 0.03 [m/s] for fine sand.
+        sediment_concentration : float, optional
+            Average sediment concentration of the water. Defaults to 0.1 [kg/m3] for tidal waters.
+        critical_shear_stress : float, optional
+            Critical shear stress for erosion of the bed. Defauls to 0.2 [Pa] for fine sand.
+        erodibility_coefficient : float, optional
+            Erodibility coefficient for the bed. Defaults to 10^-3 for fine sand.
+        mannings_n : float, optional
+            Manning’s Roughness Coefficient for open channel flow. Defaults to 0.035 for open water.
+        rho_water : float, optional
+            Density of water. Defaults to 1025 [kg/m3].
+        rho_sediment : float, optional
+            Density of sediment. Defaults to 2650 [kg/m3].
+        g : float, optional
+            Gravitational constant. Defaults to 9.81 [m/s2].
+            
         """
         super().__init__(grid)
 
@@ -145,6 +163,13 @@ class BedLevelEvolution(Component):
 
     def calc_erosion(self, flow_velocity):
         """ Compute erosion flux at links.
+
+        Parameters
+        ------
+        flow_velocity : ndarray
+            Flow velocity field across the grid object. Uses grid object output from TidalFlowCalculator
+            with "flood_tide_flow__velocity" and "ebb_tide_flow__velocity" 
+            for flood and ebb flow velocities, respectively.
     
         Returns
         -------
